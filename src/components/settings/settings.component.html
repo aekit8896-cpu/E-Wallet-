@@ -1,0 +1,66 @@
+
+<div class="max-w-4xl mx-auto space-y-8 animate-fade-in">
+  <!-- Bank Accounts Management -->
+  <div class="bg-white rounded-2xl shadow-md">
+    <div class="p-6 border-b">
+      <h3 class="text-xl font-bold text-slate-800">🏦 ຈັດການບັນຊີທະນາຄານ</h3>
+    </div>
+    <div class="p-6 space-y-4">
+      @for (acc of dataService.bankAccounts(); track acc.id) {
+        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border">
+          <div>
+            <p class="font-semibold text-slate-800">{{ acc.name }}</p>
+            <p class="text-sm text-slate-500">ເລກບັນຊີ: {{ acc.number }}</p>
+          </div>
+          <button (click)="deleteBankAccount(acc.id)" class="px-2 py-1 bg-rose-100 text-rose-600 rounded-md hover:bg-rose-200 transition text-sm">🗑️ ລຶບ</button>
+        </div>
+      }
+    </div>
+    <form [formGroup]="bankForm" (ngSubmit)="addBankAccount()" class="p-6 border-t bg-slate-50 rounded-b-2xl space-y-4">
+      <h4 class="text-base font-semibold text-slate-700">ເພີ່ມບັນຊີໃໝ່</h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <input formControlName="name" type="text" placeholder="ຊື່ບັນຊີ" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+        <input formControlName="number" type="text" placeholder="ເລກບັນຊີ" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+      </div>
+      <div class="text-right">
+        <button type="submit" [disabled]="bankForm.invalid" class="px-5 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 disabled:opacity-50 transition">➕ ເພີ່ມບັນຊີ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- User Management -->
+  <div class="bg-white rounded-2xl shadow-md">
+    <div class="p-6 border-b">
+      <h3 class="text-xl font-bold text-slate-800">👥 ຈັດການຜູ້ໃຊ້ງານ</h3>
+    </div>
+    <div class="p-6 space-y-4">
+      @for (user of authService.users(); track user.username) {
+        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border">
+          <div>
+            <p class="font-semibold text-slate-800">{{ user.name }}</p>
+            <p class="text-sm text-slate-500">Username: {{ user.username }} • Role: {{ user.role }}</p>
+          </div>
+          @if (user.username !== 'admin') {
+            <button (click)="deleteUser(user.username)" class="px-2 py-1 bg-rose-100 text-rose-600 rounded-md hover:bg-rose-200 transition text-sm">🗑️ ລຶບ</button>
+          }
+        </div>
+      }
+    </div>
+    <form [formGroup]="userForm" (ngSubmit)="addUser()" class="p-6 border-t bg-slate-50 rounded-b-2xl space-y-4">
+       <h4 class="text-base font-semibold text-slate-700">ເພີ່ມຜູ້ໃຊ້ໃໝ່</h4>
+       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+         <input formControlName="name" type="text" placeholder="ຊື່ເຕັມ" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+         <input formControlName="username" type="text" placeholder="Username" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+         <input formControlName="password" type="password" placeholder="Password" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+         <select formControlName="role" class="w-full px-4 py-2 border border-slate-300 rounded-lg bg-white">
+           <option value="GeneralStaff">GeneralStaff</option>
+           <option value="Finance">Finance</option>
+           <option value="Admin">Admin</option>
+         </select>
+       </div>
+       <div class="text-right">
+         <button type="submit" [disabled]="userForm.invalid" class="px-5 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 disabled:opacity-50 transition">➕ ເພີ່ມຜູ້ໃຊ້</button>
+       </div>
+    </form>
+  </div>
+</div>

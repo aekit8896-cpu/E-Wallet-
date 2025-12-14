@@ -1,0 +1,100 @@
+
+<div class="max-w-5xl mx-auto animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-md p-6 sm:p-8">
+    <h2 class="text-xl font-bold text-slate-800 mb-6">ສົ່ງຄຳຂໍລາຍຈ່າຍ</h2>
+
+    @if (showSuccess()) {
+      <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-6" role="alert">
+        <p class="font-bold">ສົ່ງຄຳຂໍສຳເລັດ!</p>
+        <p>ລາຍການຂອງທ່ານໄດ້ຖືກສົ່ງໄປເພື່ອລໍຖ້າການອະນຸມັດ.</p>
+      </div>
+    }
+
+    <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="expenseDate" class="block text-sm font-medium text-slate-700 mb-2">ວັນທີ່</label>
+          <input type="date" id="expenseDate" formControlName="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label for="expenseCategory" class="block text-sm font-medium text-slate-700 mb-2">ປະເພດ</label>
+          <select id="expenseCategory" formControlName="category" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+            <option value="" disabled>-- ເລືອກປະເພດ --</option>
+            <option value="ເງິນເດືອນ">ເງິນເດືອນ</option>
+            <option value="ສຳນັກງານ">ສຳນັກງານ</option>
+            <option value="ການຕະຫຼາດ">ການຕະຫຼາດ</option>
+            <option value="ອຸປະກອນ">ອຸປະກອນ</option>
+            <option value="ຄ່າໃຊ້ຈ່າຍ">ຄ່າໃຊ້ຈ່າຍ</option>
+            <option value="ອື່ນໆ">ອື່ນໆ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 bg-slate-50">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-base font-semibold text-slate-700">ລາຍການສິນຄ້າ / ບໍລິການ</h3>
+          <button type="button" (click)="addItem()" class="px-4 py-1.5 bg-cyan-500 text-white text-sm font-semibold rounded-lg hover:bg-cyan-600 transition">+ ເພີ່ມລາຍການ</button>
+        </div>
+        <div formArrayName="items" class="space-y-3">
+          @for (item of items.controls; track $index) {
+            <div [formGroupName]="$index" class="grid grid-cols-12 gap-x-3 items-end p-3 bg-white rounded-lg border">
+              <div class="col-span-12 sm:col-span-5">
+                <label class="text-xs font-medium text-slate-600">ຊື່ລາຍການ</label>
+                <input type="text" formControlName="name" placeholder="ເຊັ່ນ: ເຄື່ອງຂຽນ..." class="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm mt-1">
+              </div>
+              <div class="col-span-4 sm:col-span-2">
+                <label class="text-xs font-medium text-slate-600">ຈຳນວນ</label>
+                <input type="number" formControlName="quantity" min="1" class="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm mt-1">
+              </div>
+              <div class="col-span-8 sm:col-span-3">
+                <label class="text-xs font-medium text-slate-600">ລາຄາ (₭)</label>
+                <input type="number" formControlName="price" min="0" class="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm mt-1">
+              </div>
+              <div class="col-span-12 sm:col-span-2 flex justify-end">
+                @if (items.length > 1) {
+                  <button type="button" (click)="removeItem($index)" class="px-2 py-1.5 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition">
+                    <i class="material-icons text-base">delete</i>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="mt-4 pt-4 border-t-2 border-slate-200 flex justify-between items-center">
+          <span class="text-base font-semibold text-slate-800">ຍອດລວມທັງໝົດ:</span>
+          <span class="text-2xl font-bold text-rose-600">{{ formatCurrency(totalAmount()) }}</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">📸 ບັນທຶກຮູບ QR ທະນາຄານ</label>
+          <input type="file" (change)="handleFileInput($event, 'qr')" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+          @if (qrImagePreview()) {
+            <div class="mt-2 flex items-center gap-2">
+              <img [src]="qrImagePreview()" alt="QR Preview" class="w-16 h-16 object-cover rounded-md border">
+              <button type="button" (click)="clearImage('qr')" class="text-xs text-rose-500 hover:underline">ລຶບຮູບ</button>
+            </div>
+          }
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">🧾 ບັນທຶກຮູບບິນ</label>
+          <input type="file" (change)="handleFileInput($event, 'bill')" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+          @if (billImagePreview()) {
+            <div class="mt-2 flex items-center gap-2">
+              <img [src]="billImagePreview()" alt="Bill Preview" class="w-16 h-16 object-cover rounded-md border">
+              <button type="button" (click)="clearImage('bill')" class="text-xs text-rose-500 hover:underline">ລຶບຮູບ</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="pt-4 text-right">
+        <button type="submit" [disabled]="expenseForm.invalid || isSubmitting()" class="inline-flex items-center justify-center px-6 py-3 bg-rose-600 text-white font-semibold rounded-lg shadow-md hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-opacity-75 transition disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="material-icons mr-2">send</i>
+          <span>{{ isSubmitting() ? 'ກຳລັງສົ່ງ...' : 'ສົ່ງຄຳຂໍລາຍຈ່າຍ' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

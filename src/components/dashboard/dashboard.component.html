@@ -1,0 +1,106 @@
+
+<div class="grid gap-6 animate-fade-in">
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Today's Income -->
+    <div class="bg-white p-6 rounded-2xl shadow-md flex items-center gap-4 border-l-4 border-cyan-500">
+      <div class="w-14 h-14 rounded-full bg-cyan-100 flex items-center justify-center">
+        <i class="material-icons text-cyan-600 text-3xl">today</i>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-medium">ລາຍຮັບວັນນີ້</p>
+        <p class="text-2xl font-bold text-slate-800">{{ formatCurrency(dataService.todayIncome()) }}</p>
+      </div>
+    </div>
+    <!-- This Month's Income -->
+    <div class="bg-white p-6 rounded-2xl shadow-md flex items-center gap-4 border-l-4 border-indigo-500">
+      <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center">
+        <i class="material-icons text-indigo-600 text-3xl">trending_up</i>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-medium">ລາຍຮັບເດືອນນີ້</p>
+        <p class="text-2xl font-bold text-slate-800">{{ formatCurrency(dataService.monthIncome()) }}</p>
+      </div>
+    </div>
+    <!-- This Month's Expense -->
+    <div class="bg-white p-6 rounded-2xl shadow-md flex items-center gap-4 border-l-4 border-rose-500">
+      <div class="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center">
+        <i class="material-icons text-rose-600 text-3xl">trending_down</i>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-medium">ລາຍຈ່າຍເດືອນນີ້</p>
+        <p class="text-2xl font-bold text-slate-800">{{ formatCurrency(dataService.monthExpense()) }}</p>
+      </div>
+    </div>
+    <!-- Net Profit -->
+    <div class="bg-white p-6 rounded-2xl shadow-md flex items-center gap-4 border-l-4" [class]="netProfit() >= 0 ? 'border-emerald-500' : 'border-rose-500'">
+      <div class="w-14 h-14 rounded-full flex items-center justify-center" [class]="netProfit() >= 0 ? 'bg-emerald-100' : 'bg-rose-100'">
+        <i class="material-icons text-3xl" [class]="netProfit() >= 0 ? 'text-emerald-600' : 'text-rose-600'">account_balance_wallet</i>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 font-medium">ກຳໄລສຸດທິ</p>
+        <p class="text-2xl font-bold" [class]="netProfit() >= 0 ? 'text-emerald-600' : 'text-rose-600'">{{ formatCurrency(netProfit()) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts & Recent Transactions -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Monthly Chart -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md">
+      <h3 class="text-lg font-semibold text-slate-800 mb-4">ລາຍຮັບ ແລະ ລາຍຈ່າຍ 6 ເດືອນຫຼ້າສຸດ</h3>
+      <div class="flex gap-4 items-end h-60 pt-4 border-t border-gray-200">
+        @if (monthlyChartData().length > 0) {
+          @for (data of monthlyChartData(); track data.month) {
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full flex gap-1 items-end h-full">
+                <div class="flex-1 bg-cyan-400 rounded-t-md hover:bg-cyan-500 transition-colors" [style.height.%]="data.incomeHeight" [title]="'ລາຍຮັບ: ' + formatCurrency(data.income)"></div>
+                <div class="flex-1 bg-rose-400 rounded-t-md hover:bg-rose-500 transition-colors" [style.height.%]="data.expenseHeight" [title]="'ລາຍຈ່າຍ: ' + formatCurrency(data.expense)"></div>
+              </div>
+              <p class="text-xs text-slate-500 font-medium">{{ data.monthLabel }}</p>
+            </div>
+          }
+        } @else {
+          <p class="text-slate-500 text-center w-full">ຍັງບໍ່ມີຂໍ້ມູນ</p>
+        }
+      </div>
+      <div class="flex justify-center gap-6 mt-4 pt-4 border-t border-gray-200">
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-cyan-400 rounded-sm"></div>
+          <span class="text-sm text-slate-600">ລາຍຮັບ</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 bg-rose-400 rounded-sm"></div>
+          <span class="text-sm text-slate-600">ລາຍຈ່າຍ</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="bg-white p-6 rounded-2xl shadow-md">
+      <h3 class="text-lg font-semibold text-slate-800 mb-4">ທຸລະກຳຫຼ້າສຸດ</h3>
+      <div class="flex flex-col gap-3">
+        @if (recentTransactions().length > 0) {
+          @for (t of recentTransactions(); track t.id) {
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center" [class]="t.type === 'income' ? 'bg-cyan-100' : 'bg-rose-100'">
+                <i class="material-icons" [class]="t.type === 'income' ? 'text-cyan-600' : 'text-rose-600'">
+                  {{ t.type === 'income' ? 'arrow_upward' : 'arrow_downward' }}
+                </i>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-sm text-slate-700">{{ t.source || t.category || 'N/A' }}</p>
+                <p class="text-xs text-slate-500">{{ formatDate(t.date) }} • {{ getStatusText(t.status) }}</p>
+              </div>
+              <div class="text-right font-bold" [class]="t.type === 'income' ? 'text-cyan-600' : 'text-rose-600'">
+                {{ t.type === 'income' ? '+' : '-' }}{{ formatCurrency(t.amount) }}
+              </div>
+            </div>
+          }
+        } @else {
+          <p class="text-slate-500 text-center py-8">ຍັງບໍ່ມີທຸລະກຳ</p>
+        }
+      </div>
+    </div>
+  </div>
+</div>

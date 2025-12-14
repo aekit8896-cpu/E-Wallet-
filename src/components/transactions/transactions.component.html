@@ -1,0 +1,84 @@
+
+<div class="space-y-8 animate-fade-in">
+  <!-- Income Transactions -->
+  <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+    <div class="p-6 border-b">
+      <h3 class="text-xl font-bold text-slate-800">💵 ລາຍຮັບທັງໝົດ ({{ incomeTransactions().length }})</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-slate-500">
+        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">ວັນທີ່</th>
+            <th scope="col" class="px-6 py-3">ແຫຼ່ງລາຍຮັບ</th>
+            <th scope="col" class="px-6 py-3 text-right">ຈຳນວນເງິນ</th>
+            <th scope="col" class="px-6 py-3">ສະຖານະ</th>
+            <th scope="col" class="px-6 py-3">ຜູ້ບັນທຶກ</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (incomeTransactions().length > 0) {
+            @for (t of incomeTransactions(); track t.id) {
+              <tr class="bg-white border-b hover:bg-slate-50">
+                <td class="px-6 py-4">{{ formatDate(t.date) }}</td>
+                <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">{{ t.source }}</th>
+                <td class="px-6 py-4 text-right font-semibold text-cyan-600">{{ formatCurrency(t.amount) }}</td>
+                <td class="px-6 py-4">
+                  <span class="px-2 py-1 text-xs font-semibold rounded-full" [class]="getStatusClass(t.status)">
+                    {{ getStatusText(t.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">{{ t.createdBy }}</td>
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-slate-500">ຍັງບໍ່ມີຂໍ້ມູນລາຍຮັບ</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Expense Transactions -->
+  <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+    <div class="p-6 border-b">
+      <h3 class="text-xl font-bold text-slate-800">💸 ລາຍຈ່າຍທັງໝົດ ({{ expenseTransactions().length }})</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-slate-500">
+        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">ວັນທີ່</th>
+            <th scope="col" class="px-6 py-3">ປະເພດ</th>
+            <th scope="col" class="px-6 py-3 text-right">ຈຳນວນເງິນ</th>
+            <th scope="col" class="px-6 py-3">ສະຖານະ</th>
+            <th scope="col" class="px-6 py-3">ຜູ້ບັນທຶກ</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (expenseTransactions().length > 0) {
+            @for (t of expenseTransactions(); track t.id) {
+              <tr class="bg-white border-b hover:bg-slate-50">
+                <td class="px-6 py-4">{{ formatDate(t.date) }}</td>
+                <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">{{ t.category }}</th>
+                <td class="px-6 py-4 text-right font-semibold text-rose-600">{{ formatCurrency(t.amount) }}</td>
+                <td class="px-6 py-4">
+                  <span class="px-2 py-1 text-xs font-semibold rounded-full" [class]="getStatusClass(t.status)">
+                    {{ getStatusText(t.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">{{ t.createdBy }}</td>
+              </tr>
+            }
+          } @else {
+            <tr>
+              <td colspan="5" class="px-6 py-10 text-center text-slate-500">ຍັງບໍ່ມີຂໍ້ມູນລາຍຈ່າຍ</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

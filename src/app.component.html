@@ -1,0 +1,47 @@
+
+@if (!authService.currentUser()) {
+  <app-login></app-login>
+} @else {
+  <div class="flex h-screen bg-gray-100 font-sans">
+    <app-sidebar 
+      [currentUser]="authService.currentUser()!"
+      [currentView]="currentView()"
+      [pendingCount]="dataService.pendingTransactions().length"
+      (viewChange)="onViewChange($event)"
+      (logout)="onLogout()">
+    </app-sidebar>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <app-header 
+        [view]="currentView()" 
+        [totalBalance]="dataService.totalBalance()">
+      </app-header>
+
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6 lg:p-8">
+        @switch (currentView()) {
+          @case ('dashboard') {
+            <app-dashboard></app-dashboard>
+          }
+          @case ('income') {
+            <app-income></app-income>
+          }
+          @case ('expense') {
+            <app-expense></app-expense>
+          }
+          @case ('transactions') {
+            <app-transactions></app-transactions>
+          }
+          @case ('approvals') {
+            <app-approvals></app-approvals>
+          }
+          @case ('rejected') {
+            <app-rejected></app-rejected>
+          }
+          @case ('settings') {
+            <app-settings></app-settings>
+          }
+        }
+      </main>
+    </div>
+  </div>
+}

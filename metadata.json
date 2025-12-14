@@ -1,0 +1,5 @@
+{
+  "name": "E-Wallet & Accounting System",
+  "description": "An internal E-Wallet and Accounting system for managing company finances, including income, expenses, and an approval workflow for transactions. Features role-based access for admins, finance staff, and general employees.",
+  "requestFramePermissions": []
+}
