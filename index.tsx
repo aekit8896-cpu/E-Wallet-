@@ -291,13 +291,189 @@ export default function VOMSApp() {
               </div>
             </div>
           )}
+
+          {activeTab === 'issue' && (
+            <div className="max-w-5xl mx-auto space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">ອອກເອກະສານ</h2>
+                <p className="text-gray-500">ສ້າງເອກະສານໃໝ່ ແລະ ພິມໃບຮັບເງິນ</p>
+              </div>
+              <form onSubmit={handleCreateDocument} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <select
+                  className="px-4 py-3 border rounded-xl"
+                  value={formData.type}
+                  onChange={e => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                >
+                  {Object.values(fees as any).map((fee: any) => (
+                    <option key={fee.id} value={fee.id}>{fee.name} - {formatCurrency(fee.price)}</option>
+                  ))}
+                </select>
+                <input className="px-4 py-3 border rounded-xl" placeholder="ຊື່ຜູ້ຂໍ" value={formData.citizen} onChange={e => setFormData(prev => ({ ...prev, citizen: e.target.value }))} required />
+                <input className="px-4 py-3 border rounded-xl" placeholder="ເລກບັດປະຈຳຕົວ" value={formData.citizenId} onChange={e => setFormData(prev => ({ ...prev, citizenId: e.target.value }))} required />
+                <input className="px-4 py-3 border rounded-xl" placeholder="ທີ່ຢູ່" value={formData.address} onChange={e => setFormData(prev => ({ ...prev, address: e.target.value }))} required />
+                <textarea className="md:col-span-2 px-4 py-3 border rounded-xl" placeholder="ເຫດຜົນ" value={formData.reason} onChange={e => setFormData(prev => ({ ...prev, reason: e.target.value }))} required />
+                <button type="submit" className="md:col-span-2 inline-flex justify-center items-center gap-2 py-3 bg-blue-900 text-white rounded-xl hover:bg-blue-800">
+                  <CheckCircle size={18} /> ບັນທຶກແລະອອກເອກະສານ
+                </button>
+              </form>
+            </div>
+          )}
+
+          {activeTab === 'documents' && (
+            <div className="max-w-7xl mx-auto space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">ປະຫວັດເອກະສານ</h2>
+                <p className="text-gray-500">ລາຍການທຸກເອກະສານທີ່ໄດ້ອອກ</p>
+              </div>
+              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 text-left text-gray-600">
+                    <tr>
+                      <th className="p-3">ເລກທີ</th>
+                      <th className="p-3">ປະເພດ</th>
+                      <th className="p-3">ຜູ້ຂໍ</th>
+                      <th className="p-3">ວັນທີ</th>
+                      <th className="p-3">ຄ່າທຳນຽມ</th>
+                      <th className="p-3">ຈັດການ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {documents.length === 0 && (
+                      <tr><td className="p-4 text-center text-gray-400" colSpan={6}>ຍັງບໍ່ມີຂໍ້ມູນ</td></tr>
+                    )}
+                    {documents.map((doc: any) => (
+                      <tr key={doc.id} className="border-t">
+                        <td className="p-3 font-mono text-xs">{doc.id}</td>
+                        <td className="p-3">{doc.feeName}</td>
+                        <td className="p-3">{doc.citizen}</td>
+                        <td className="p-3">{formatDate(doc.date)}</td>
+                        <td className="p-3">{formatCurrency(doc.fee)}</td>
+                        <td className="p-3">
+                          <button
+                            onClick={() => { setPrintData(doc); setPrintMode('doc'); }}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-100 text-blue-700 rounded-lg"
+                          >
+                            <Printer size={14} /> ພິມ
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'settings' && user.role === 'admin' && (
+            <div className="max-w-7xl mx-auto space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">ຕັ້ງຄ່າລະບົບ</h2>
+                <p className="text-gray-500">ຂໍ້ມູນຫ້ອງການ, ຜູ້ໃຊ້ ແລະ ຄ່າບໍລິການ</p>
+              </div>
+              <div className="flex gap-2">
+                <button className={`px-4 py-2 rounded-lg ${settingsTab === 'general' ? 'bg-blue-900 text-white' : 'bg-white border'}`} onClick={() => setSettingsTab('general')}>ຂໍ້ມູນຫ້ອງການ</button>
+                <button className={`px-4 py-2 rounded-lg ${settingsTab === 'users' ? 'bg-blue-900 text-white' : 'bg-white border'}`} onClick={() => setSettingsTab('users')}>ຜູ້ໃຊ້</button>
+                <button className={`px-4 py-2 rounded-lg ${settingsTab === 'services' ? 'bg-blue-900 text-white' : 'bg-white border'}`} onClick={() => setSettingsTab('services')}>ຄ່າບໍລິການ</button>
+              </div>
+
+              {settingsTab === 'general' && (
+                <form onSubmit={handleUpdateOffice} className="bg-white p-6 rounded-2xl border grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input className="px-4 py-3 border rounded-xl" value={officeInfo.village} onChange={e => setOfficeInfo({ ...officeInfo, village: e.target.value })} />
+                  <input className="px-4 py-3 border rounded-xl" value={officeInfo.district} onChange={e => setOfficeInfo({ ...officeInfo, district: e.target.value })} />
+                  <input className="px-4 py-3 border rounded-xl" value={officeInfo.province} onChange={e => setOfficeInfo({ ...officeInfo, province: e.target.value })} />
+                  <input className="px-4 py-3 border rounded-xl" value={officeInfo.taxId} onChange={e => setOfficeInfo({ ...officeInfo, taxId: e.target.value })} />
+                  <button type="submit" className="md:col-span-2 inline-flex justify-center items-center gap-2 py-3 bg-blue-900 text-white rounded-xl"><Save size={18} /> ບັນທຶກ</button>
+                </form>
+              )}
+
+              {settingsTab === 'users' && (
+                <div className="bg-white p-6 rounded-2xl border space-y-4">
+                  <button onClick={() => setShowAddModal({ type: 'user' })} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg"><UserPlus size={16} /> ເພີ່ມຜູ້ໃຊ້</button>
+                  <div className="space-y-2">
+                    {users.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between border rounded-xl p-3">
+                        <div className="flex items-center gap-2"><Users size={16} /> {u.name} ({u.username})</div>
+                        <button onClick={() => handleDeleteUser(u.id)} className="text-red-600"><Trash2 size={16} /></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {settingsTab === 'services' && (
+                <div className="bg-white p-6 rounded-2xl border space-y-4">
+                  <button onClick={() => setShowAddModal({ type: 'doc' })} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg"><Plus size={16} /> ເພີ່ມປະເພດເອກະສານ</button>
+                  {Object.values(fees as any).map((fee: any) => (
+                    <div key={fee.id} className="flex items-center justify-between border rounded-xl p-3">
+                      <span>{fee.name}</span>
+                      <span className="font-semibold">{formatCurrency(fee.price)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </main>
+
+      {printData && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6 space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-bold">ຕົວຢ່າງການພິມ ({printMode})</h3>
+              <button onClick={() => setPrintData(null)}><X /></button>
+            </div>
+            <div className="print-area border rounded-xl p-4 space-y-1 text-sm">
+              <p><strong>ເລກທີ:</strong> {printData.id}</p>
+              <p><strong>ຜູ້ຂໍ:</strong> {printData.citizen}</p>
+              <p><strong>ປະເພດ:</strong> {printData.feeName}</p>
+              <p><strong>ຄ່າທຳນຽມ:</strong> {formatCurrency(printData.fee)}</p>
+            </div>
+            <div className="flex justify-end gap-2 no-print">
+              <button onClick={() => setPrintData(null)} className="px-4 py-2 border rounded-lg">ປິດ</button>
+              <button onClick={() => window.print()} className="px-4 py-2 bg-blue-900 text-white rounded-lg inline-flex items-center gap-2"><Printer size={16} /> ພິມ</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAddModal.type === 'user' && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <form onSubmit={handleAddUser} className="bg-white w-full max-w-md rounded-2xl p-6 space-y-3">
+            <h3 className="font-bold">ເພີ່ມຜູ້ໃຊ້ໃໝ່</h3>
+            <input className="w-full px-3 py-2 border rounded-lg" placeholder="ຊື່" value={newUser.name} onChange={e => setNewUser({ ...newUser, name: e.target.value })} required />
+            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Username" value={newUser.username} onChange={e => setNewUser({ ...newUser, username: e.target.value })} required />
+            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Password" type="password" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} required />
+            <select className="w-full px-3 py-2 border rounded-lg" value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
+              <option value="staff">staff</option>
+              <option value="admin">admin</option>
+            </select>
+            <div className="flex justify-end gap-2">
+              <button type="button" className="px-3 py-2 border rounded-lg" onClick={() => setShowAddModal({ type: null })}>ຍົກເລີກ</button>
+              <button type="submit" className="px-3 py-2 bg-blue-900 text-white rounded-lg">ບັນທຶກ</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {showAddModal.type === 'doc' && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <form onSubmit={handleAddDocType} className="bg-white w-full max-w-md rounded-2xl p-6 space-y-3">
+            <h3 className="font-bold">ເພີ່ມປະເພດເອກະສານ</h3>
+            <input className="w-full px-3 py-2 border rounded-lg" placeholder="ຊື່ບໍລິການ" value={newDocType.name} onChange={e => setNewDocType({ ...newDocType, name: e.target.value })} required />
+            <input className="w-full px-3 py-2 border rounded-lg" placeholder="ຄ່າທຳນຽມ" type="number" value={newDocType.price} onChange={e => setNewDocType({ ...newDocType, price: e.target.value })} required />
+            <div className="flex justify-end gap-2">
+              <button type="button" className="px-3 py-2 border rounded-lg" onClick={() => setShowAddModal({ type: null })}>ຍົກເລີກ</button>
+              <button type="submit" className="px-3 py-2 bg-blue-900 text-white rounded-lg">ບັນທຶກ</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
 
-const container = document.getElementById('root');
+const container = document.getElementById('root') || document.querySelector('app-root');
 if (container) {
   createRoot(container).render(
     <React.StrictMode>
